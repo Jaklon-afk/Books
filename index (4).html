@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The Outcast Chaos God Series</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=Literata:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f1effa; --panel:#ffffff; --ink:#1c1a3b; --muted:#5b5877; --line:#d6d2ee;
+  --accent:#3a35d6; --accent-ink:#ffffff; --focus:#0b5cff;
+  --head:'Bricolage Grotesque','Helvetica Neue',Arial,sans-serif;
+  --body:'Literata',Georgia,'Times New Roman',serif;
+}
+@media (prefers-color-scheme:dark){
+  :root{--bg:#14122b; --panel:#1f1c40; --ink:#ece9ff; --muted:#aaa6cf; --line:#34305f; --accent:#9d9aff; --accent-ink:#14122b; --focus:#8fb2ff}
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.65 var(--body)}
+main{max-width:1000px;margin:0 auto;padding:30px 18px 60px}
+h1{font:800 clamp(2.6rem,9vw,5rem)/.98 var(--head);letter-spacing:-.035em;margin:0 0 12px}
+.tag{max-width:34em;color:var(--muted);margin:0 0 34px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:22px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column}
+.cover{width:calc(100% - 12px);aspect-ratio:2/3;object-fit:cover;border-radius:6px 10px 10px 6px;color:#fff;padding:18px 16px;display:flex;flex-direction:column;justify-content:space-between;
+  box-shadow:inset 6px 0 0 rgba(0,0,0,.2),0 8px 18px rgba(20,18,60,.22);margin:4px 6px 16px}
+img.cover{padding:0;display:block}
+.cover b{font:800 1.7rem/1.05 var(--head);letter-spacing:-.02em}
+.cover span{font:500 .9rem var(--head)}
+.card h2{font:700 1.25rem/1.25 var(--head);margin:0}
+.meta{color:var(--muted);font-size:.9rem;margin:2px 0 8px}
+.blurb{margin:0 0 16px;flex:1;font-size:.97rem;white-space:pre-line}
+.buy{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.price{font:800 1.3rem var(--head)}
+.btn{background:var(--accent);color:var(--accent-ink);text-decoration:none;border:0;border-radius:8px;padding:10px 18px;font:700 .95rem var(--head);cursor:pointer;display:inline-block}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.btn.sm{padding:6px 12px;font-size:.85rem}
+footer{margin-top:44px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted)}
+footer a{color:var(--ink)}
+.linkbtn{background:none;border:0;padding:0;color:var(--muted);text-decoration:underline;cursor:pointer;font:inherit;margin-left:14px}
+.admin{display:flex;flex-wrap:wrap;gap:10px;justify-content:flex-end;margin-bottom:16px}
+.login{max-width:340px;margin-top:16px}
+input,textarea{font:inherit;color:inherit;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px;width:100%;min-width:0}
+textarea{min-height:90px;resize:vertical}
+label{display:flex;flex-direction:column;gap:3px;font:600 .8rem var(--head);margin-bottom:8px}
+.bigin{font:800 2rem/1.1 var(--head)}
+.tools{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+#msg{margin:0 0 12px;color:var(--muted);min-height:1.5em}
+.admin+#msg{text-align:right}
+
+/* loading screen */
+#loader{position:fixed;inset:0;z-index:50;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;transition:opacity .7s ease,visibility .7s}
+#loader.done{opacity:0;visibility:hidden}
+#loader .ring{width:78px;height:78px;border-radius:50%;border:5px solid var(--line);border-top-color:var(--accent);animation:spin 1s linear infinite;position:relative}
+#loader .ring::after{content:"";position:absolute;inset:14px;border-radius:50%;background:var(--accent);animation:pulse 1.3s ease-in-out infinite}
+#loader p{font:800 clamp(1.4rem,5vw,2.1rem)/1.1 var(--head);letter-spacing:-.02em;margin:0;padding:0 20px;text-align:center;animation:breathe 2.2s ease-in-out infinite}
+
+/* entrance animations */
+.card,h1,.tag{opacity:0}
+.ready h1{animation:fadeUp .7s .05s both}
+.ready .tag{animation:fadeUp .7s .18s both}
+.ready .card{animation:fadeUp .7s both;animation-delay:calc(.25s + var(--i,0) * .1s)}
+.settled .card,.settled h1,.settled .tag{opacity:1;animation:none}
+
+/* order form + orders list */
+.overlay{position:fixed;inset:0;z-index:60;background:rgba(10,8,30,.62);display:flex;align-items:center;justify-content:center;padding:18px;animation:fadeIn .2s both}
+.modal{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;width:100%;max-width:420px;max-height:92vh;overflow:auto;animation:fadeUp .3s both}
+.modal h2{font:800 1.5rem/1.2 var(--head);margin:0 0 4px}
+.order{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:12px}
+.order p{margin:2px 0}
+.ohead{font:800 2rem/1.1 var(--head);margin:0 0 14px}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+/* hover animations */
+.card{transition:transform .25s ease,box-shadow .25s ease}
+.settled .card:hover{transform:translateY(-6px);box-shadow:0 16px 32px rgba(20,18,60,.2)}
+.cover{transition:transform .3s ease}
+.settled .card:hover .cover{transform:rotate(-1.5deg) scale(1.03)}
+.btn{transition:transform .15s ease,filter .15s ease}
+.btn:hover{transform:translateY(-2px);filter:brightness(1.12)}
+.btn:active{transform:translateY(0)}
+
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pulse{0%,100%{transform:scale(.5);opacity:.5}50%{transform:scale(1);opacity:1}}
+@keyframes breathe{50%{opacity:.55}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;animation-delay:0s!important}
+  .card,h1,.tag{opacity:1}
+}
+a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+</head>
+<body>
+<div id="loader" role="status" aria-live="polite"><div class="ring" aria-hidden="true"></div><p id="lt">Loading…</p></div>
+<main><div id="app"></div></main>
+<script>
+(function(){
+  /* ---- PASTE YOUR SUPABASE DETAILS HERE (see README.md) ---- */
+  var SUPABASE_URL='https://wuewihiqamophprckzps.supabase.co';
+  var SUPABASE_KEY='sb_publishable_2bvDYjQ39e5tHD9pDY_Qwg_xzTJPn2t';
+  /* Free key from web3forms.com: customer orders are then emailed to you. */
+  var ORDER_FORM_KEY='PASTE_WEB3FORMS_KEY';
+  var useForm=!/PASTE_/.test(ORDER_FORM_KEY);
+  /* ---------------------------------------------------------- */
+
+  var DEFAULT={"series":"The Outcast Chaos God Series","tagline":"Read the whole series. Pick a book and buy it directly.","email":"you@example.com","books":[{"id":"b1","title":"The Outcast Chaos God","blurb":"Write a short description of Book One here.","price":"£9.99","format":"E-Book","link":"","hue":275,"img":""},{"id":"b2","title":"Book Two","blurb":"Write a short description of Book Two here.","price":"£7.50","format":"E-book","link":"","hue":345,"img":""},{"id":"b3","title":"Book Three","blurb":"Write a short description of Book Three here.","price":"£12.00","format":"E-Book","link":"","hue":230,"img":""}]};
+
+  var sb=(!/PASTE_/.test(SUPABASE_URL)&&window.supabase)?window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY):null;
+  var app=document.getElementById('app');
+  var S=DEFAULT, raw=JSON.stringify(S), session=null, editing=false, showLogin=false, busy=false;
+  var t0=Date.now(), shown=false;
+  try{document.getElementById('lt').textContent=localStorage.getItem('shop-name')||DEFAULT.series}catch(e){document.getElementById('lt').textContent=DEFAULT.series}
+  function hideLoader(){
+    if(shown)return; shown=true;
+    setTimeout(function(){
+      var l=document.getElementById('loader');
+      document.body.classList.add('ready');
+      if(l){l.classList.add('done');setTimeout(function(){l.remove()},800)}
+      setTimeout(function(){document.body.classList.add('settled')},2400);
+    },Math.max(0,1200-(Date.now()-t0)));
+  }
+  setTimeout(hideLoader,8000);
+  var view='shop', orders=[];
+
+  function openOrder(b){
+    var f={name:'',email:'',qty:'1',note:''};
+    var ov=el('div',{class:'overlay',role:'dialog','aria-modal':'true','aria-label':'Order '+b.title});
+    var box=el('div',{class:'modal'});
+    box.appendChild(el('h2',{text:'Order: '+b.title}));
+    box.appendChild(el('p',{class:'meta',text:(b.price||'')+(b.format?' – '+b.format:'')}));
+    box.appendChild(field('Your name',f,'name'));
+    box.appendChild(field('Your email',f,'email','input','','email'));
+    box.appendChild(field('Quantity',f,'qty','input','','number'));
+    box.appendChild(field('Note (optional)',f,'note','textarea'));
+    var out=el('p',{class:'meta','aria-live':'polite'});
+    box.appendChild(out);
+    function fallback(name,email,qty){
+      var msg='Order request\nBook: '+b.title+'\nQuantity: '+qty+'\nName: '+name+'\nEmail: '+email+(f.note.trim()?'\nNote: '+f.note.trim():'');
+      box.textContent='';
+      box.appendChild(el('h2',{text:'Almost done'}));
+      box.appendChild(el('p',{text:'This could not be sent automatically. Please email the message below to '+S.email+'.'}));
+      var ta=el('textarea',{readonly:'readonly'}); ta.value=msg; box.appendChild(ta);
+      var copy=btn('Copy message','',function(){
+        try{navigator.clipboard.writeText(msg).then(function(){copy.textContent='Copied'},function(){ta.select()})}catch(e){ta.select()}
+      });
+      var mail=el('a',{class:'btn ghost',href:'mailto:'+S.email+'?subject='+encodeURIComponent('Order: '+b.title)+'&body='+encodeURIComponent(msg),text:'Open email app'});
+      box.appendChild(el('div',{class:'tools'},[copy,mail,btn('Close','ghost',function(){ov.remove()})]));
+    }
+    var send=btn('Send order request','',function(){
+      var name=f.name.trim(), email=f.email.trim(), qty=parseInt(f.qty,10);
+      if(!name){out.textContent='Please enter your name.';return}
+      if(email.indexOf('@')<1){out.textContent='Please enter a valid email address.';return}
+      if(!(qty>=1&&qty<=20)){out.textContent='Quantity must be between 1 and 20.';return}
+      send.disabled=true; out.textContent='Sending…';
+      var thanks=function(){
+        box.textContent='';
+        box.appendChild(el('h2',{text:'Thank you!'}));
+        box.appendChild(el('p',{text:'Your order request for '+b.title+' was sent. You will be contacted at '+email+'.'}));
+        box.appendChild(btn('Close','',function(){ov.remove()}));
+      };
+      if(useForm){
+        fetch('https://api.web3forms.com/submit',{
+          method:'POST',
+          headers:{'Content-Type':'application/json','Accept':'application/json'},
+          body:JSON.stringify({access_key:ORDER_FORM_KEY,subject:'New order: '+b.title+' (x'+qty+')',from_name:S.series,name:name,email:email,
+            message:'Book: '+b.title+'\nQuantity: '+qty+'\nName: '+name+'\nEmail: '+email+(f.note.trim()?'\nNote: '+f.note.trim():'')})
+        }).then(function(r){return r.json()}).then(function(j){if(j&&j.success){thanks()}else{fallback(name,email,qty)}}).catch(function(){fallback(name,email,qty)});
+      }else if(sb){
+        sb.from('orders').insert({book:b.title,name:name,email:email,qty:qty,note:f.note.trim()||null}).then(function(r){if(r.error){fallback(name,email,qty)}else{thanks()}});
+      }else{fallback(name,email,qty)}
+    });
+    box.appendChild(el('div',{class:'tools'},[send,btn('Close','ghost',function(){ov.remove()})]));
+    ov.appendChild(box);
+    ov.onclick=function(e){if(e.target===ov)ov.remove()};
+    document.body.appendChild(ov);
+  }
+
+  function loadOrders(){
+    sb.from('orders').select('*').order('created_at',{ascending:false}).then(function(r){
+      orders=r.data||[]; view='orders'; render();
+      if(r.error)setMsg('Could not load orders: '+r.error.message);
+    });
+  }
+
+  function renderOrders(){
+    app.appendChild(el('div',{class:'admin'},[btn('Back to shop','ghost',function(){view='shop';render()})]));
+    app.appendChild(el('p',{id:'msg','aria-live':'polite'}));
+    app.appendChild(el('h2',{class:'ohead',text:'Orders ('+orders.length+')'}));
+    if(!orders.length)app.appendChild(el('p',{class:'meta',text:'No orders yet.'}));
+    orders.forEach(function(o){
+      var box=el('div',{class:'order'});
+      box.appendChild(el('b',{text:o.qty+' × '+o.book}));
+      box.appendChild(el('p',{class:'meta',text:new Date(o.created_at).toLocaleString()}));
+      box.appendChild(el('p',{},[document.createTextNode(o.name+' · '),el('a',{href:'mailto:'+o.email,text:o.email})]));
+      if(o.note)box.appendChild(el('p',{text:o.note}));
+      var del=btn('Delete','ghost sm',function(){
+        if(del.dataset.sure){sb.from('orders').delete().eq('id',o.id).then(loadOrders)}
+        else{del.dataset.sure='1';del.textContent='Tap again to delete'}
+      });
+      box.appendChild(del);
+      app.appendChild(box);
+    });
+  }
+
+  function el(t,p,k){var n=document.createElement(t);for(var a in p||{}){if(a==='text')n.textContent=p[a];else n.setAttribute(a,p[a])}(k||[]).forEach(function(c){n.appendChild(c)});return n}
+  function btn(text,cls,fn){var b=el('button',{type:'button',class:'btn '+cls,text:text});b.onclick=fn;return b}
+  function field(label,obj,key,tag,cls,type){
+    var i=el(tag||'input',cls?{class:cls}:{}); if(type)i.type=type; i.value=obj[key]||'';
+    i.oninput=function(){obj[key]=i.value};
+    return el('label',{text:label},[i]);
+  }
+  function setMsg(t){var m=document.getElementById('msg');if(m)m.textContent=t||''}
+  function toCover(file,cb){
+    var r=new FileReader();
+    r.onload=function(){var im=new Image();im.onload=function(){
+      var W=480,H=720,c=document.createElement('canvas');c.width=W;c.height=H;
+      var s=Math.max(W/im.width,H/im.height),w=im.width*s,h=im.height*s;
+      c.getContext('2d').drawImage(im,(W-w)/2,(H-h)/2,w,h);
+      cb(c.toDataURL('image/jpeg',.82))};
+      im.src=r.result};
+    r.readAsDataURL(file);
+  }
+  function coverEl(b){
+    if(b.img){return el('img',{class:'cover',src:b.img,alt:'Cover of '+b.title})}
+    var c=el('div',{class:'cover','aria-hidden':'true'},[el('b',{text:b.title}),el('span',{text:S.series})]);
+    c.style.background='linear-gradient(160deg,hsl('+b.hue+',60%,42%),hsl('+((b.hue+30)%360)+',55%,28%))';
+    return c;
+  }
+
+  function render(){
+    app.textContent='';
+    document.title=S.series;
+    if(session&&view==='orders'){renderOrders();return}
+    if(session){
+      var bar=el('div',{class:'admin'});
+      if(!editing){bar.appendChild(btn('Edit shop','',function(){editing=true;render()}));if(!useForm)bar.appendChild(btn('Orders','ghost',loadOrders))}
+      else{
+        bar.appendChild(btn('Add a book','ghost',function(){S.books.push({id:'b'+Date.now(),title:'New book',blurb:'',price:'',format:'',link:'',hue:Math.floor(Math.random()*360),img:''});render()}));
+        bar.appendChild(btn('Cancel','ghost',function(){S=JSON.parse(raw);editing=false;render()}));
+        bar.appendChild(btn('Save','',save));
+      }
+      bar.appendChild(btn('Sign out','ghost',function(){sb.auth.signOut()}));
+      app.appendChild(bar);
+    }
+    app.appendChild(el('p',{id:'msg','aria-live':'polite'}));
+    if(editing){
+      app.appendChild(field('Series name',S,'series','input','bigin'));
+      app.appendChild(field('Tagline',S,'tagline'));
+    }else{
+      app.appendChild(el('h1',{text:S.series}));
+      app.appendChild(el('p',{class:'tag',text:S.tagline}));
+    }
+    var grid=el('div',{class:'grid'});
+    S.books.forEach(function(b,i){
+      var card=el('article',{class:'card'});card.style.setProperty('--i',i);
+      card.appendChild(coverEl(b));
+      if(editing){
+        card.appendChild(field('Title',b,'title'));
+        card.appendChild(field('Format',b,'format'));
+        card.appendChild(field('Price',b,'price'));
+        card.appendChild(field('Description',b,'blurb','textarea'));
+        card.appendChild(field('Buy link (Stripe, PayPal, Gumroad, Amazon)',b,'link'));
+        var up=el('input',{type:'file',accept:'image/*'});
+        up.onchange=function(){if(up.files[0])toCover(up.files[0],function(d){b.img=d;render()})};
+        card.appendChild(el('label',{text:'Cover image'},[up]));
+        var t=el('div',{class:'tools'});
+        if(b.img)t.appendChild(btn('Remove cover','ghost sm',function(){b.img='';render()}));
+        if(i>0)t.appendChild(btn('Move up','ghost sm',function(){S.books.splice(i-1,0,S.books.splice(i,1)[0]);render()}));
+        if(i<S.books.length-1)t.appendChild(btn('Move down','ghost sm',function(){S.books.splice(i+1,0,S.books.splice(i,1)[0]);render()}));
+        var del=btn('Delete book','ghost sm',function(){if(del.dataset.sure){S.books.splice(i,1);render()}else{del.dataset.sure='1';del.textContent='Tap again to delete'}});
+        t.appendChild(del);
+        card.appendChild(t);
+      }else{
+        card.appendChild(el('h2',{text:b.title}));
+        card.appendChild(el('p',{class:'meta',text:b.format}));
+        card.appendChild(el('p',{class:'blurb',text:b.blurb}));
+        var ok=/^https?:\/\//i.test(b.link||'');
+        var a;
+        if(ok){a=el('a',{class:'btn',href:b.link,text:'Buy now'})}
+        else if(sb){a=btn('Order this book','',function(){openOrder(b)})}
+        else{a=el('a',{class:'btn',href:'mailto:'+S.email+'?subject='+encodeURIComponent('Order: '+b.title),text:'Order this book'})}
+        if(ok){a.target='_blank';a.rel='noopener'}
+        card.appendChild(el('div',{class:'buy'},[el('span',{class:'price',text:b.price}),a]));
+      }
+      grid.appendChild(card);
+    });
+    app.appendChild(grid);
+
+    var foot=el('footer');
+    if(editing){foot.appendChild(field('Order and contact email',S,'email'))}
+    else{
+      foot.appendChild(document.createTextNode('Questions or bulk orders? Email '));
+      foot.appendChild(el('a',{href:'mailto:'+S.email,text:S.email}));
+      foot.appendChild(document.createTextNode('.'));
+      if(sb&&!session){
+        var lb=el('button',{type:'button',class:'linkbtn',text:'Owner login'});
+        lb.onclick=function(){showLogin=!showLogin;render()};
+        foot.appendChild(lb);
+        if(showLogin){
+          var f={email:'',password:''};
+          var form=el('div',{class:'login'});
+          form.appendChild(field('Email',f,'email','input','','email'));
+          form.appendChild(field('Password',f,'password','input','','password'));
+          form.appendChild(btn('Sign in','',function(){
+            setMsg('Signing in…');
+            sb.auth.signInWithPassword({email:f.email.trim(),password:f.password}).then(function(r){
+              if(r.error){setMsg(r.error.message)}else{showLogin=false}
+            });
+          }));
+          foot.appendChild(form);
+        }
+      }
+    }
+    app.appendChild(foot);
+    if(!sb)setMsg('Preview only: add your Supabase details in index.html to turn on login and saving.');
+  }
+
+  function load(){
+    if(!sb){render();return}
+    sb.from('shop').select('data').eq('id',1).maybeSingle().then(function(r){
+      if(r.data&&r.data.data){S=r.data.data;raw=JSON.stringify(S)}
+      try{localStorage.setItem('shop-name',S.series)}catch(e){}
+      if(!editing)render();
+      hideLoader();
+      if(r.error)setMsg('Could not load the shop: '+r.error.message);
+    });
+  }
+
+  function save(){
+    if(busy||!sb)return; busy=true; setMsg('Saving…');
+    sb.from('shop').upsert({id:1,data:S}).then(function(r){
+      busy=false;
+      if(r.error){setMsg('Could not save: '+r.error.message);return}
+      raw=JSON.stringify(S); editing=false; render(); setMsg('Saved. Other devices update automatically.');
+    });
+  }
+
+  render();
+  if(!sb)hideLoader();
+  if(sb){
+    sb.auth.getSession().then(function(r){session=r.data.session;if(!editing)render()});
+    sb.auth.onAuthStateChange(function(ev,s){session=s;if(!s){editing=false;view='shop'}if(!editing)render()});
+    sb.channel('shop-live').on('postgres_changes',{event:'*',schema:'public',table:'shop'},function(){if(!editing)load()}).subscribe();
+    load();
+  }
+})();
+</script>
+</body>
+</html>
